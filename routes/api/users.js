@@ -18,6 +18,8 @@ router.post(
       "password",
       "please enter a password with 6 or more characters"
     ).isLength({ min: 6 }),
+    body("type", "type is required").notEmpty(),
+    body("type", "type must be admin or customer").isIn(["admin", "customer"]),
   ],
   async (req, res) => {
     try {
@@ -34,6 +36,7 @@ router.post(
         email: req.body.email,
         age: req.body.age,
         password: password,
+        type: req.body.type
       };
       const user = new User(userObj);
       await user.save();
@@ -59,10 +62,6 @@ router.post(
   ],
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
       const { email, password, type, refreshToken } = req.body;
 
       if (type == "email") {
@@ -207,12 +206,12 @@ async function handleEmailLogin(email, res, password) {
 
 function getUserTokens(user, res) {
   const accessToken = jwt.sign(
-    { email: user.email, id: user._id },
+    { email: user.email, id: user._id, type: user.type},
     process.env.JWT_SECRET,
     { expiresIn: "10m" }
   );
   const refreshToken = jwt.sign(
-    { email: user.email, id: user._id },
+    { email: user.email, id: user._id, type: user.type},
     process.env.JWT_SECRET,
     { expiresIn: "50m" }
   );

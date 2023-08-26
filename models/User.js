@@ -14,9 +14,14 @@ const UserSchema = new mongoose.Schema(
     password:{
         type: String
     },
-   age:{
+    age:{
         type: Number
-    }
+    },
+    type:{
+      type: String,
+      enum: ['admin','customer'],
+      default: 'customer'
+  },
   },
   {
     timestamps: true,
