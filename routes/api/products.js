@@ -54,8 +54,7 @@ router.post(
 
 router.get("/", authenticateToken, async (req, res) => {
   try {
-    const id = req.user.id;
-    const products = await Product.find({userId: id});
+    const products = await Product.find();
     res.status(200).json(products);
   } catch (error) {
     console.error(error);
@@ -66,8 +65,7 @@ router.get("/", authenticateToken, async (req, res) => {
 router.get("/:id", authenticateToken, async (req, res) => {
     try {
       const id = req.params.id;
-      const userId = req.user.id;
-      const product = await Product.findOne({userId: userId, _id: id});
+      const product = await Product.findOne({_id: id});
       if (product) {
         res.status(200).json(product);
       } else {
@@ -92,9 +90,8 @@ router.get("/:id", authenticateToken, async (req, res) => {
         }
         const id = req.params.id;
         const body = req.body;
-        const userId = req.user.id;
 
-        const product = await Product.findOneAndUpdate({userId: userId, _id: id}, body, { new: true });
+        const product = await Product.findOneAndUpdate({_id: id}, body, { new: true });
         if (product) {
           res.status(200).json(product);
         } else {
@@ -110,9 +107,8 @@ router.get("/:id", authenticateToken, async (req, res) => {
 router.delete("/:id", authenticateToken, async (req, res) => {
   try {
     const id = req.params.id;
-    const userId = req.user.id;
 
-    const product = await Product.findOneAndDelete({userId: userId, _id: id});
+    const product = await Product.findOneAndDelete({_id: id});
     if (product) {
       res.status(200).json([product, { massage: "product deleted" }]);
     } else {
