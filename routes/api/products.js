@@ -62,6 +62,11 @@ router.post(
 
 router.get("/", authenticateToken, async (req, res) => {
   try {
+
+    let current = req?.query?.current ?? '1'
+    current = parseInt(current)
+    let pageSize = req?.query?.pageSize ?? '10'
+    pageSize = parseInt(pageSize)
     const aggregate = [];
     aggregate.push(
       // {
@@ -80,7 +85,13 @@ router.get("/", authenticateToken, async (req, res) => {
           localField: "fileId",
           foreignField: "_id",
         },
-      }
+      },
+      {
+        $skip: (current-1)*pageSize,
+      },
+      {
+        $limit: pageSize, // push it on the last 
+      },
     );
     const products = await Product.aggregate(aggregate);
     res.status(200).json(products);
